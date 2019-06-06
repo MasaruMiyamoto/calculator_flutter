@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
-final double _buttonSize = 60.0;
+ double _buttonSize;
 
 class MyApp extends StatelessWidget {
   @override
@@ -60,45 +60,68 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
 
             //テキスト表示領域
-            Text(
-              '$_textString',
-              style: Theme.of(context).textTheme.display1,
+            Container(
+              height: _buttonSize,
+              width: 500,
+              decoration: new BoxDecoration(
+                border: new Border.all(color: Colors.blueAccent)
+                ),
+              child: Text(
+                '$_textString',
+                style: TextStyle(fontSize: 80),
+                textAlign: TextAlign.right,
+            ),
+            ),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _numberButton('AC'),
+                _numberButton('+/-'),
+                _numberButton('%'),
+                _numberButton('÷'),
+              ],
             ),
             
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 _numberButton('7'),
-                SizedBox(width: 5,),
                 _numberButton('8'),
-                SizedBox(width: 5,),
                 _numberButton('9'),
+                _numberButton('/')
               ],
             ),
 
-            SizedBox(height: 5,),
+            //SizedBox(height: 5,),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 _numberButton('4'),
-                SizedBox(width: 5,),
                 _numberButton('5'),
-                SizedBox(width: 5,),
                 _numberButton('6'),
+                _numberButton('*')
               ],
             ),
-
-            SizedBox(height: 5,),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 _numberButton('1'),
-                SizedBox(width: 5,),
                 _numberButton('2'),
-                SizedBox(width: 5,),
                 _numberButton('3'),
+                _numberButton('-'),
+              ],
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                _numberButton('0'),
+                _numberButton('.'),
+                _numberButton('='),
+                _numberButton('+'),
               ],
             ),
 
@@ -112,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return RaisedButton(
       child: Text(
         _num,
-        style: TextStyle(fontSize: 20),
+        style: TextStyle(fontSize: 40),
       ),
       onPressed: () {
         print('button $_num selected');
