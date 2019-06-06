@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
- double _buttonSize;
+ double _buttonSize = 100.0;
 
 class MyApp extends StatelessWidget {
   @override
