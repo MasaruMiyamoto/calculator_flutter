@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
 
- double _buttonSize = 100;
+ final double _buttonSize = 90;
 
 class MyApp extends StatelessWidget {
   @override
@@ -20,8 +20,6 @@ class MyApp extends StatelessWidget {
   //buttonのテーマ
   ButtonThemeData _numberButtonThemeData(){
     return ButtonThemeData(
-      minWidth: _buttonSize,
-      height: _buttonSize,
       textTheme: ButtonTextTheme.primary,
       buttonColor: Colors.blue,
     );
@@ -73,50 +71,50 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  _numberButton("AC"),
-                  _numberButton("+/-"),
-                  _numberButton('%'),
-                  _numberButton('÷'),
+                  _button("AC"),
+                  _button("+/-"),
+                  _button('%'),
+                  _button('÷'),
                 ],
               ),
                 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  _numberButton('7'),
-                  _numberButton('8'),
-                  _numberButton('9'),
-                  _numberButton('×')
+                  _button('7'),
+                  _button('8'),
+                  _button('9'),
+                  _button('×')
                 ],
               ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  _numberButton('4'),
-                  _numberButton('5'),
-                  _numberButton('6'),
-                  _numberButton('-')
+                  _button('4'),
+                  _button('5'),
+                  _button('6'),
+                  _button('-')
                 ],
               ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  _numberButton('1'),
-                  _numberButton('2'),
-                  _numberButton('3'),
-                  _numberButton('+'),
+                  _button('1'),
+                  _button('2'),
+                  _button('3'),
+                  _button('+'),
                 ],
               ),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  _numberButton('0'),
-                  _numberButton(''),
-                  _numberButton('.'),
-                  _numberButton('='),
+                  _button('0'),
+                  _button(''),
+                  _button('.'),
+                  _button('='),
                 ],
               ),
             ],
@@ -125,18 +123,33 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Center _button(String _num) {
+    return Center(
+        child: Container(
+          height: _buttonSize,
+          width: _buttonSize,
+          margin: const EdgeInsets.all(4.0),    //ボタン間の隙間設定
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50.0),
+            child: _numberButton(_num),
+          ),
+        ),
+    );
+  }
   RaisedButton _numberButton(String _num) {
     return RaisedButton(
-      child: Text(
-        _num,
-        style: TextStyle(
-          fontSize: 40,
+      child: SizedBox(
+          child: Text(
+            _num,
+            style: TextStyle(
+             fontSize: 25,
+            ),
+          ),
         ),
-      ),
       onPressed: () {
         print('button $_num selected');
         setState(() {
-          //入力された値を追加して画面に表示
+          //入力された値を追加or計算して画面に表示
           _textString = dispValue(_textString, _num);
         });
       },
