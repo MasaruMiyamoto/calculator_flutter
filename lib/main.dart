@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _beforeValue = "";   //初めの入力値
   String _afterValue = "";    //後の入力値
 
+  bool _isDec = false;
   bool _isPushValue = false;
 
   @override
@@ -56,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
             children: <Widget>[
               //テキスト表示領域
               Container(
-                height: _buttonSize,
                 width: 500,
                 decoration: new BoxDecoration(
                   border: new Border.all(color: Colors.blueAccent)
@@ -112,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   _button('0'),
-                  _button(''),
+                  _button('00'),
                   _button('.'),
                   _button('='),
                 ],
@@ -142,12 +142,12 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Text(
             _num,
             style: TextStyle(
-             fontSize: 25,
+             fontSize: 28,
             ),
           ),
         ),
       onPressed: () {
-        print('button $_num selected');
+        //print('button $_num selected');
         setState(() {
           //入力された値を追加or計算して画面に表示
           _textString = dispValue(_textString, _num);
@@ -160,55 +160,113 @@ class _MyHomePageState extends State<MyHomePage> {
   String dispValue(String _text, String _num) {
     String retString = _text;
 
-    if ( isDigit(_num) ) {
-      //0だけの場合
-      if (retString == "0" || _isPushValue) {
-        retString = _num.toString();
-        if ( _isPushValue) {
+    try{
+      if ( isDigit(_num) ) {
+        //数値が入力された場合
+
+        if (_isDec){
+          _num = "." + _num;
+          _isDec = false;
+        }
+
+        //演算ボタン押下直後判定
+        if (_isPushValue){
+          retString = _num;
           _isPushValue = false;
+        }else{
+          if (retString =="0") {
+            retString = _num;
+          } else{
+            retString += _num;
+          }
         }
-      } else {
-        retString += _num.toString();
-      }
-    }else{
-      //押されたボタンが数字以外の場合
+        // //小数点の有無で整数型か小数型か分岐
+        // if (retString.contains(".")){
+        //   retString = double.parse(retString).toString();
+        // }else{
+        //   retString = int.parse(retString).toString();
+        // }
 
-      //四則演算の場合
-      if (_num == "+" || _num == "-" || _num == "×" || _num == "÷") {
-        //beforeValueが空の場合
-        if (_beforeValue.isEmpty) {
-          _beforeValue = retString;
-          _sign = _num;
-          _isPushValue = true;
-        } else if (_afterValue.isEmpty) {
-          //四則演算の変更
-          _sign = _num;
-          _isPushValue = true;
+      }else{
+        //押されたボタンが数字以外の場合
+
+        //四則演算の場合
+        if (_num == "+" || _num == "-" || _num == "×" || _num == "÷") {
+          //beforeValueが空の場合
+          if (_beforeValue.isEmpty) {
+            _beforeValue = retString;
+            _sign = _num;
+            _isPushValue = true;
+            _isDec = false;
+          } else if (_afterValue.isEmpty) {
+            //四則演算の変更
+            _sign = _num;
+            _isPushValue = true;
+            _isDec = false;
+          }else if (_sign.isNotEmpty) {
+            _afterValue = retString;
+
+            //計算を行う
+            retString = calculateValue(_beforeValue, _afterValue, _sign);
+            
+            //計算結果を_beforeValueに入れる
+            _beforeValue = retString;
+          }
         }
-      }
 
-      //"="の場合
-      if (_num == "=") {
-        //画面の値をafterValueに格納
-        _afterValue = retString;
+        if (_num == "+/-") {
+          if (retString.contains(".")){
+            retString = (double.parse(retString) * -1).toString();
+          }else{
+            retString = (int.parse(retString) * -1).toString();
+          }
+        }
 
-        //計算を行う
-        if (_beforeValue.isNotEmpty && _afterValue.isNotEmpty && _sign.isNotEmpty) {
-          retString = calculateValue(_beforeValue, _afterValue, _sign);
+        if (_num == "%") {
+            double value = double.parse(retString) / 100;
+            if(value%1  == 0) {
+              retString = value.round().toString();
+            } else {
+              retString = value.toString();
+            }
+        }
+
+        if (_num == "=") {
+          //画面の値をafterValueに格納
+          _afterValue = retString;
+
+          //計算を行う
+          if (_beforeValue.isNotEmpty && _afterValue.isNotEmpty && _sign.isNotEmpty) {
+            retString = calculateValue(_beforeValue, _afterValue, _sign);
+            
+            //計算結果を_beforeValueに入れる
+            _beforeValue = retString;
+
+            //初期化
+            _isPushValue = false;
+
+          }
+          
         }
         
-      }
-      //小数点の場合
-      if (_num == ".") {
+        if (_num == ".") {
+          //次の文字を追加する際に、小数点をつけるflgを立てる
+          if(_isPushValue == true || retString.contains(".") == false){
+            _isDec = true;
+          }
+        }
 
+        if (_num == "AC") {
+          _beforeValue = "";
+          _afterValue = "";
+          _sign = "";
+          retString = "0";
+          _isPushValue = false;
+          _isDec = false;
+        }
       }
-      //ACの場合
-      if (_num == "AC") {
-        _beforeValue = "";
-        _afterValue = "";
-        _sign = "";
-        retString = "0";
-      }
+    } catch (e) {
+      print("any error");
     }
     return retString;
   }
@@ -261,11 +319,16 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         break;
     }
-    if (answer.isFinite) {
+
+    //整数、小数判定
+    if (answer%1 == 0) {
+      print("Finite");
       retString = answer.round().toString();
     } else {
+      print("Not Finite");
       retString = answer.toString();
     }
+
     return retString;
   }
 }
